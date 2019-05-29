@@ -52,4 +52,28 @@ public interface UserMapper {
 
 	@Select("select * from performancePlan where PerformancePlan_id=#{PerformancePlan_id}")
 	PerformancePlan selectPerformancePlanById(@Param("PerformancePlan_id") int performancePlan_id);
+
+	@Select({"<script>","select * from play",
+			"where 1=1",
+			"<when test='play_name!=null'>",
+			"and play_name like ",
+			"concat('%',#{play_name},'%')",
+			"</when>",
+			"<when test='type!=null'>",
+			"and type like ",
+			"concat('%',#{type},'%')",
+			"</when>",
+			"</script>"
+			})
+    List<Play> selectPlayByConditions(@Param("play_name") String play_name,@Param("type") String type);
+
+	@Select({"<script>",
+			"select * from cinemaHall",
+			"where 1=1",
+			"<when test='cinemaHall_name!=null'>",
+			"and cinemaHall_name like",
+			"concat('%',#{cinemaHall_name},'%')",
+			"</when>",
+			"</script>"})
+	List<CinemaHall> selectCinemaHallByConditions(@Param("cinemaHall_name") String cinemaHall_name);
 }

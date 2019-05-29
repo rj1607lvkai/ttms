@@ -9,6 +9,7 @@ import com.example.demo2.service.UserService;
 import com.example.demo2.utils.ConstantValue;
 import com.example.demo2.utils.PhoneUtil;
 import com.example.demo2.vo.PerformancePlanVo;
+import com.example.demo2.vo.SaleSituation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,9 +33,19 @@ public class ManagerController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value="addUser.action")
+
+
+
+    @RequestMapping(value = "manageUser.action")
+    public String manageUser(Model model){
+        List<User> userList = managerService.selectAllUser();
+        model.addAttribute(ConstantValue.SELECT_RESULT,userList);
+        return "manageUser";
+    }
+
+    @RequestMapping(value = "addUser.action")
     public String addUser(String user_name, String password, String rePassword,
-                           String email, String phone, Model model) {
+                          String email, String phone, Model model) {
 
         if (!Objects.equals(password, rePassword)) {
             model.addAttribute(ConstantValue.REGISTER_FAILED_KEY, "密码不一致");
@@ -57,9 +68,29 @@ public class ManagerController {
         }
         return "error";
     }
-    @RequestMapping(value="updateUser.action")
+
+    @RequestMapping(value = "deleteUser.action")
+    public String deleteUser(String user_id,
+                             HttpServletRequest request, HttpServletResponse response,
+                             Model model) {
+        int delete = managerService.deleteUserById(user_id);
+        if (delete == ConstantValue.DELETE_SUCCESS) {
+            return "success";
+        }
+        model.addAttribute(ConstantValue.DELETE_FAILED_KEY, "删除失败,用户不存在");
+        try {
+            request.getRequestDispatcher("/manager/selectAllUser.action").forward(request, response);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "error";
+    }
+
+    @RequestMapping(value = "updateUser.action")
     public String updateUser(User user, Model model,
-                             HttpServletRequest request,HttpServletResponse response){
+                             HttpServletRequest request, HttpServletResponse response) {
         if (!PhoneUtil.isMobileNumber(user.getPhone())) {
             model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "电话号码不正确");
             try {
@@ -72,10 +103,10 @@ public class ManagerController {
             return "error";
         } else {
             int update = managerService.updateUserById(user);
-            if (update >= ConstantValue.UPDATE_SUCCESS){
+            if (update >= ConstantValue.UPDATE_SUCCESS) {
                 return "success";
             }
-            model.addAttribute(ConstantValue.UPDATE_FAILED_KEY,"用户不存在");
+            model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "用户不存在");
             try {
                 request.getRequestDispatcher("/manager/selectAllUser.action").forward(request, response);
             } catch (ServletException e) {
@@ -86,23 +117,28 @@ public class ManagerController {
             return "error";
         }
     }
-    @RequestMapping(value="deleteUser.action")
-    public String deleteUser(String user_id,
-                             HttpServletRequest request,HttpServletResponse response,
-                             Model model) {
-        int delete = managerService.deleteUserById(user_id);
-        if (delete == ConstantValue.DELETE_SUCCESS) {
-            return "success";
+
+    @RequestMapping(value = "showAllUser.action")
+    public String showAllUser(Model model){
+        List<User> userList = managerService.selectAllUser();
+        model.addAttribute(ConstantValue.SELECT_RESULT,userList);
+        return "manageUser";
+    }
+
+    @RequestMapping(value = "showUserByConditions.action")
+    public String showUserByConditions(String user_name,
+                                       String position,
+                                       String phone,
+                                       Model model){
+        int pos=0;
+        if (position == null || position == ""){
+
+        }else {
+            pos=Integer.parseInt(position);
         }
-        model.addAttribute(ConstantValue.DELETE_FAILED_KEY, "删除失败,用户不存在");
-        try {
-            request.getRequestDispatcher("/manager/selectAllUser.action").forward(request,response);
-        } catch (ServletException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "error";
+        List<User> userList = managerService.showUserByConditions(user_name,pos,phone);
+        model.addAttribute(ConstantValue.SELECT_RESULT,userList);
+        return "manageUser";
     }
 
 
@@ -111,7 +147,10 @@ public class ManagerController {
 
 
 
-    @RequestMapping(value="addPlay.action")
+
+
+
+    @RequestMapping(value = "addPlay.action")
     public String addPlay(Play play, Model model) {
         int add = managerService.addPlay(play);
         if (add == ConstantValue.INSERT_SUCCESS) {
@@ -121,7 +160,8 @@ public class ManagerController {
         return "home";
 
     }
-    @RequestMapping(value="deletePlay.action")
+
+    @RequestMapping(value = "deletePlay.action")
     public String addPlay(String play_name, HttpSession session,
                           Model model) {
         if (play_name == null || play_name == "") {
@@ -136,10 +176,11 @@ public class ManagerController {
         return "home";
 
     }
-    @RequestMapping(value="updatePlay.action")
+
+    @RequestMapping(value = "updatePlay.action")
     public String addPlay(Play play, HttpSession session,
                           Model model) {
-        int play_id=play.getPlay_id();
+        int play_id = play.getPlay_id();
         if (play_id == 0) {
             model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "影片不能为空");
             return "home";
@@ -154,8 +195,7 @@ public class ManagerController {
     }
 
 
-
-    @RequestMapping(value="addCinemaHall.action")
+    @RequestMapping(value = "addCinemaHall.action")
     public String addCinemaHall(CinemaHall cinemaHall, Model model) {
 
         int insert = managerService.addCinemaHall(cinemaHall);
@@ -166,7 +206,8 @@ public class ManagerController {
         return "home";
 
     }
-    @RequestMapping(value="deleteCinemaHall.action")
+
+    @RequestMapping(value = "deleteCinemaHall.action")
     public String deleteCinemaHall(int cinemaHall_id,
                                    HttpServletRequest request, HttpServletResponse response,
                                    Model model) {
@@ -177,7 +218,7 @@ public class ManagerController {
         }
         model.addAttribute(ConstantValue.DELETE_FAILED_KEY, "影厅不存在");
         try {
-            request.getRequestDispatcher("/user/selectAllCinemaHall.action").forward(request,response);
+            request.getRequestDispatcher("/user/selectAllCinemaHall.action").forward(request, response);
         } catch (ServletException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -186,7 +227,8 @@ public class ManagerController {
         return "error";
 
     }
-    @RequestMapping(value="updateCinemaHall.action")
+
+    @RequestMapping(value = "updateCinemaHall.action")
     public String updateCinemaHall(CinemaHall cinemaHall,
                                    HttpServletRequest request, HttpServletResponse response,
                                    Model model) {
@@ -197,7 +239,7 @@ public class ManagerController {
         }
         model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "影厅不存在");
         try {
-            request.getRequestDispatcher("/user/selectAllCinemaHall.action").forward(request,response);
+            request.getRequestDispatcher("/user/selectAllCinemaHall.action").forward(request, response);
         } catch (ServletException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -208,61 +250,101 @@ public class ManagerController {
     }
 
 
-
-
-
-
     @RequestMapping(value = "addPerformancePlan.action")
-    public String addPerformancePlan(PerformancePlan performancePlan,Model model){
-        int insert=managerService.insertPerformancePlan(performancePlan);
-        if (insert>=ConstantValue.INSERT_SUCCESS){
+    public String addPerformancePlan(PerformancePlan performancePlan, Model model) {
+        int insert = managerService.insertPerformancePlan(performancePlan);
+        if (insert >= ConstantValue.INSERT_SUCCESS) {
             return "success";
         }
-        model.addAttribute(ConstantValue.INSERT_FAILED_KEY,"添加演出计划失败");
+        model.addAttribute(ConstantValue.INSERT_FAILED_KEY, "添加演出计划失败");
         return "failed";
     }
+
     @RequestMapping(value = "updatePerformancePlan.action")
-    public String updatePerformancePlan(PerformancePlan performancePlan,Model model){
-        int update=managerService.updatePerformancePlanById(performancePlan);
-        if (update>=ConstantValue.UPDATE_SUCCESS){
+    public String updatePerformancePlan(PerformancePlan performancePlan, Model model) {
+        int update = managerService.updatePerformancePlanById(performancePlan);
+        if (update >= ConstantValue.UPDATE_SUCCESS) {
             return "success";
         }
-        model.addAttribute(ConstantValue.UPDATE_FAILED_KEY,"修改演出计划失败");
+        model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "修改演出计划失败");
         return "failed";
     }
+
     @RequestMapping(value = "deletePerformancePlan.action")
-    public String deletePerformancePlan(PerformancePlan performancePlan,Model model){
-        int delete=managerService.deletePerformancePlanById(performancePlan);
-        if (delete>=ConstantValue.DELETE_SUCCESS){
+    public String deletePerformancePlan(PerformancePlan performancePlan, Model model) {
+        int delete = managerService.deletePerformancePlanById(performancePlan);
+        if (delete >= ConstantValue.DELETE_SUCCESS) {
             return "success";
         }
-        model.addAttribute(ConstantValue.DELETE_FAILED_KEY,"删除演出计划失败");
+        model.addAttribute(ConstantValue.DELETE_FAILED_KEY, "删除演出计划失败");
         return "failed";
+    }
+
+
+    @RequestMapping(value = "showPlayByConditions.action")
+    public String showPlayByConditions(String play_name,
+                                       String type, Model model) {
+        List<Play> playList = userService.selectPlayByConditions(play_name, type);
+        model.addAttribute(ConstantValue.SELECT_RESULT, playList);
+        return "managePlay";
     }
 
     @RequestMapping(value = "managePlay.action")
-    public String managePlay(Model model){
+    public String managePlay(Model model) {
         List<Play> playList = userService.selectAllPlay();
-        model.addAttribute(ConstantValue.SELECT_RESULT,playList);
+        model.addAttribute(ConstantValue.SELECT_RESULT, playList);
         return "managePlay";
     }
+
+
+    @RequestMapping(value = "showCinemaHallByConditions.action")
+    public String showCinemaHallByConditions(String cinemaHall_name, Model model) {
+        List<CinemaHall> cinemaHallList = userService.selectCinemaHallByConditions(cinemaHall_name);
+        model.addAttribute(ConstantValue.SELECT_RESULT, cinemaHallList);
+        return "manageCinemaHall";
+
+    }
+
     @RequestMapping(value = "manageCinemaHall.action")
-    public String manageCinemaHall(Model model){
+    public String manageCinemaHall(Model model) {
         List<CinemaHall> cinemaHallList = userService.selectAllCinemaHall();
-        model.addAttribute(ConstantValue.SELECT_RESULT,cinemaHallList);
+        model.addAttribute(ConstantValue.SELECT_RESULT, cinemaHallList);
         return "manageCinemaHall";
     }
-    @RequestMapping(value = "managePerformancePlan.action")
-    public String managePerformancePlan(Model model){
-        List<PerformancePlan> performancePlanList = managerService.selectAllPerformancePlan();
-        model.addAttribute(ConstantValue.SELECT_RESULT,performancePlanList);
+
+
+    @RequestMapping(value = "showPerformancePlanByConditions.action")
+    public String showPerformancePlanByConditions(String cinemaHall_name,
+                                                  String play_name,
+                                                  Model model) {
+        List<PerformancePlan> performancePlanList = managerService.showPerformancePlanByConditions(play_name, cinemaHall_name);
+        model.addAttribute(ConstantValue.SELECT_RESULT, performancePlanList);
         return "managePerformancePlan";
     }
-    @RequestMapping(value = "manageUser.action")
-    public String manageUser(Model model){
-        List<User> userList = managerService.selectAllUser();
-        model.addAttribute(ConstantValue.SELECT_RESULT,userList);
-        return "manageUser";
+
+    @RequestMapping(value = "managePerformancePlan.action")
+    public String managePerformancePlan(Model model) {
+        List<PerformancePlan> performancePlanList = managerService.selectAllPerformancePlan();
+        model.addAttribute(ConstantValue.SELECT_RESULT, performancePlanList);
+        return "managePerformancePlan";
     }
+
+    @RequestMapping(value = "showSaleSituation.action")
+    public String showSaleSituation(Model model) {
+        List<SaleSituation> saleSituationList=managerService.showSaleSituation();
+        model.addAttribute(ConstantValue.SELECT_RESULT, saleSituationList);
+        return "saleSituation";
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 }

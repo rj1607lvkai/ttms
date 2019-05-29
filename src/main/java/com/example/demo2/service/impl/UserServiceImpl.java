@@ -147,6 +147,32 @@ public class UserServiceImpl implements UserService {
         return performancePlan.getSeat();
     }
 
+    @Override
+    public List<Play> selectPlayByConditions(String play_name, String type) {
+        return userMapper.selectPlayByConditions(play_name,type);
+    }
+
+    @Override
+    public List<CinemaHall> selectCinemaHallByConditions(String cinemaHall_name) {
+        return userMapper.selectCinemaHallByConditions(cinemaHall_name);
+    }
+
+    @Override
+    public int refundTicket(int performancePlan_id, int row, int column) {
+        PerformancePlan performancePlan=userMapper.selectPerformancePlanById(performancePlan_id);
+        String seat=performancePlan.getSeat();
+        if (seat == null || seat == ""){
+            return 0;
+        }
+        String currentSeat=row+"&"+column+"/";
+        if (seat.contains(currentSeat)){
+            seat=seat.replace(currentSeat,"");
+            int update=userMapper.updatePerformancePlanById(performancePlan_id,seat);
+            return update;
+        }
+        return 0;
+    }
+
     private Ticket setTicket(PerformancePlanVo performancePlanVo, int row, int column) {
         Ticket ticket=new Ticket();
 
@@ -184,6 +210,7 @@ public class UserServiceImpl implements UserService {
         ticket.setCinemaHall_name(cinemaHall_name);
         ticket.setRow(row);
         ticket.setColumn(column);
+        ticket.setPerformancePlan_id(performancePlan_id1);
         return ticket;
     }
 

@@ -29,4 +29,10 @@ public interface UserService {
     Ticket buyTicket(PerformancePlanVo performancePlanVo, int number, int row, int column);
 
     String selectSeat(int performancePlan_id);
+
+    List<Play> selectPlayByConditions(String play_name, String type);
+
+    List<CinemaHall> selectCinemaHallByConditions(String cinemaHall_name);
+
+    int refundTicket(int performancePlan_id, int row, int column);
 }

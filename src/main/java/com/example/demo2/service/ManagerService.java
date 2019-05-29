@@ -4,6 +4,7 @@ import com.example.demo2.pojo.CinemaHall;
 import com.example.demo2.pojo.PerformancePlan;
 import com.example.demo2.pojo.Play;
 import com.example.demo2.pojo.User;
+import com.example.demo2.vo.SaleSituation;
 
 import java.util.List;
 
@@ -34,4 +35,10 @@ public interface ManagerService {
     int deletePerformancePlanById(PerformancePlan performancePlan);
 
     List<PerformancePlan> selectAllPerformancePlan();
+
+    List<PerformancePlan> showPerformancePlanByConditions(String play_name, String cinemaHall_name);
+
+    List<SaleSituation> showSaleSituation();
+
+    List<User> showUserByConditions(String user_name, int position, String phone);
 }

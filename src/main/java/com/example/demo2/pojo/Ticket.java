@@ -18,6 +18,15 @@ public class Ticket {
     private int row;
     private int column;
 
+    private int performancePlan_id;
+
+    public int getPerformancePlan_id() {
+        return performancePlan_id;
+    }
+
+    public void setPerformancePlan_id(int performancePlan_id) {
+        this.performancePlan_id = performancePlan_id;
+    }
 
     @Override
     public String toString() {
@@ -32,6 +41,7 @@ public class Ticket {
                 ", cinemaHall_name='" + cinemaHall_name + '\'' +
                 ", row=" + row +
                 ", column=" + column +
+                ", performancePlan_id=" + performancePlan_id +
                 '}';
     }
 

@@ -6,9 +6,11 @@ import com.example.demo2.pojo.PerformancePlan;
 import com.example.demo2.pojo.Play;
 import com.example.demo2.pojo.User;
 import com.example.demo2.service.ManagerService;
+import com.example.demo2.vo.SaleSituation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -106,6 +108,69 @@ public class ManagerServiceImpl implements ManagerService {
             performancePlan.setEnd_minute(Integer.parseInt(endTimes[4]));
         }
         return performancePlanList;
+    }
+
+    @Override
+    public List<PerformancePlan> showPerformancePlanByConditions(String play_name, String cinemaHall_name) {
+        List<PerformancePlan> resultList=new ArrayList<>();
+        List<PerformancePlan> performancePlanList = managerMapper.selectAllPerformancePlan();
+        for (PerformancePlan performancePlan:performancePlanList){
+            int play_id = performancePlan.getPlay_id();
+            int cinemaHall_id = performancePlan.getCinemaHall_id();
+            CinemaHall cinemaHall = managerMapper.selectCinemaHallById(cinemaHall_id);
+            Play play = managerMapper.selectPlayById(play_id);
+            if (play_name == null || play_name == ""){
+                if (cinemaHall_name == null || cinemaHall_name ==""){
+                    return performancePlanList;
+                }
+                if (cinemaHall.getCinemaHall_name().contains(cinemaHall_name)){
+                    resultList.add(performancePlan);
+                }
+            }else {
+                if (cinemaHall_name == null || cinemaHall_name == ""){
+                    if (play.getPlay_name().contains(play_name)){
+                        resultList.add(performancePlan);
+                    }
+                }else {
+                    if (play.getPlay_name().contains(play_name) && cinemaHall.getCinemaHall_name().contains(cinemaHall_name)){
+                        resultList.add(performancePlan);
+                    }
+                }
+            }
+        }
+        return resultList;
+    }
+
+    @Override
+    public List<SaleSituation> showSaleSituation() {
+        List<SaleSituation> saleSituationList=new ArrayList<>();
+
+        List<PerformancePlan> performancePlanList = managerMapper.selectAllPerformancePlan();
+        for (PerformancePlan performancePlan:performancePlanList){
+            SaleSituation saleSituation=new SaleSituation();
+            int play_id = performancePlan.getPlay_id();
+            Play play = managerMapper.selectPlayById(play_id);
+            saleSituation.setPlay_id(play_id);
+            saleSituation.setPlay_name(play.getPlay_name());
+            saleSituation.setType(play.getType());
+
+            String seat = performancePlan.getSeat();
+            if (seat == null || seat == ""){
+                saleSituation.setSaleCount(0);
+            }else {
+                String[] seatNum = seat.split("/");
+                saleSituation.setSaleCount(seatNum.length);
+            }
+            double price=Integer.parseInt(play.getPrice());
+            saleSituation.setSaleVolume(saleSituation.getSaleCount()*price);
+            saleSituationList.add(saleSituation);
+        }
+        return saleSituationList;
+    }
+
+    @Override
+    public List<User> showUserByConditions(String user_name, int position, String phone) {
+        return managerMapper.selectUserByConditions(user_name,position,phone);
     }
 
     private PerformancePlan setPerformancePlanTime(PerformancePlan performancePlan) {

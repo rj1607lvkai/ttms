@@ -11,7 +11,7 @@ public class ConstantValue {
 
     public static String SELECT_RESULT="select_result";
 
-
+    public static String BUY_TICKET_SUCCESS="buy_ticket_success";
 
     public static String REGISTER_FAILED_KEY="register_failed_key";
 

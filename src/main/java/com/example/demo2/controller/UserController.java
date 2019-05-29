@@ -8,6 +8,7 @@ import com.example.demo2.service.UserService;
 import com.example.demo2.utils.ConstantValue;
 import com.example.demo2.utils.PhoneUtil;
 import com.example.demo2.vo.PerformancePlanVo;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -106,9 +107,18 @@ public class UserController {
         return "error";
     }
 
+
     @RequestMapping(value = "showAllPlay.action")
     public String showAllPlay(Model model) {
         List<Play> playList = userService.selectAllPlay();
+        model.addAttribute(ConstantValue.SELECT_RESULT, playList);
+        return "play";
+    }
+
+    @RequestMapping(value = "showPlayByConditions.action")
+    public String showPlayByConditions(String play_name,
+                                       String type,Model model) {
+        List<Play> playList = userService.selectPlayByConditions(play_name,type);
         model.addAttribute(ConstantValue.SELECT_RESULT, playList);
         return "play";
     }
@@ -120,20 +130,40 @@ public class UserController {
         return "playDetails";
 
     }
+
+
     @RequestMapping(value = "showPerformancePlanInfo.action")
     public String showPerformancePlanInfo(int play_id,Model model) {
         List<PerformancePlanVo> performancePlanVoList = userService.showPerformancePlanInfo(play_id);
         model.addAttribute(ConstantValue.SELECT_RESULT, performancePlanVoList);
         return "performancePlanInfo";
     }
-    @RequestMapping(value = "selectAllCinemaHall.action")
-    public String selectAllCinemaHall(Model model) {
+
+
+
+
+
+    @RequestMapping(value = "ShowAllCinemaHall.action")
+    public String ShowAllCinemaHall(Model model) {
 
         List<CinemaHall> cinemaHallList = userService.selectAllCinemaHall();
         model.addAttribute(ConstantValue.SELECT_RESULT, cinemaHallList);
-        return "selectCinemaHallResult";
+        return "cinemaHall";
 
     }
+    @RequestMapping(value = "showCinemaHallByConditions.action")
+    public String showCinemaHallByConditions(String cinemaHall_name,Model model) {
+        List<CinemaHall> cinemaHallList = userService.selectCinemaHallByConditions(cinemaHall_name);
+        model.addAttribute(ConstantValue.SELECT_RESULT, cinemaHallList);
+        return "cinemaHall";
+
+    }
+
+
+
+
+
+
 
 
     @RequestMapping(value = "selectAllPerformancePlan.action")
@@ -151,12 +181,26 @@ public class UserController {
     @RequestMapping(value = "buyTicket.action")
     public String buyTicket(PerformancePlanVo performancePlanVo,
                             int number,int row,int column, Model model){
-        System.out.println(performancePlanVo);
-        String seat=userService.selectSeat(performancePlanVo.getPerformancePlan_id());
 
+        String seat=userService.selectSeat(performancePlanVo.getPerformancePlan_id());
         Ticket ticket=userService.buyTicket(performancePlanVo,number,row,column);
-        System.out.println(ticket);
-        System.out.println(seat);
+        if (ticket != null){
+            model.addAttribute(ConstantValue.BUY_TICKET_SUCCESS,ticket);
+            return "buyTicketSuccess";
+        }
+        return "error";
+    }
+
+    @RequestMapping(value = "refundTicket.action")
+    public String refundTicket(int performancePlan_id,
+                                int row,int column, Model model){
+
+
+
+        int update=userService.refundTicket(performancePlan_id,row,column);
+        if (update>=ConstantValue.UPDATE_SUCCESS){
+            return "success";
+        }
         return "error";
 
     }
