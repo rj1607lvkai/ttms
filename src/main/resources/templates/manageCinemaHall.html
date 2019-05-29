@@ -5,6 +5,10 @@
     <title>Title</title>
 </head>
 <body>
+<form action="/manager/showCinemaHallByConditions.action" method="post">
+    <input type="text" name="cinemaHall_name"/><br/>
+    <input type="submit" value="查看"/><br/>
+</form>
 <h1>deleteCinemaHall</h1>
 <tr th:each="cinemaHall:${select_result}">
 

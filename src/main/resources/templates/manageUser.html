@@ -5,6 +5,16 @@
     <title>Title</title>
 </head>
 <body>
+<form action="/manager/showUserByConditions.action" method="post">
+    user_name
+    <input type="text" name="user_name"/><br/>
+    position
+    <input type="text" name="position"/><br/>
+    phone
+    <input type="text" name="phone"/><br/>
+    <input type="submit" value="查看"/>
+</form>
+
 <h1>deleteUser</h1>
 <tr th:each="user:${select_result}">
 

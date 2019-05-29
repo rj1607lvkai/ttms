@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="/user/showCinemaHallByConditions.action" method="post">
+        <input type="text" name="cinemaHall_name"/><br/>
+        <input type="submit" value="查看"/><br/>
+    </form>
+    <tr th:each="cinemaHall:${select_result}">
+    <form>
+        cinemaHall_id
+        <input th:value="${cinemaHall.cinemaHall_id}"
+                type="text" name="cinemaHall_id"/><br/>
+        cinemaHall_name
+        <input th:value="${cinemaHall.cinemaHall_name}"
+                type="text" name="cinemaHall_name"/><br/>
+        cinemaHall_row
+        <input th:value="${cinemaHall.cinemaHall_row}"
+                type="text" name="cinemaHall_row"/><br/>
+        cinemaHall_column
+        <input th:value="${cinemaHall.cinemaHall_column}"
+                type="text" name="cinemaHall_column"/><br/>
+        image
+        <input th:value="${cinemaHall.image}"
+                type="text" name="image"/><br/>
+    </form>
+    </tr>
+</body>
+</html>

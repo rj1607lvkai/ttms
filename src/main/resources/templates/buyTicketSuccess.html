@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="/user/refundTicket.action" method="post">
+        ticket_id
+        <input th:value="${buy_ticket_success.ticket_id}"
+                type="text" name="ticket_id"/><br/>
+        performancePlan_id
+        <input th:value="${buy_ticket_success.performancePlan_id}"
+                type="text" name="performancePlan_id"/><br/>
+        start_time
+        <input th:value="${buy_ticket_success.start_time}"
+                type="text" name="start_time"/><br/>
+
+
+
+        end_time
+        <input th:value="${buy_ticket_success.end_time}"
+                type="text" name="end_time"/><br/>
+        play_name
+        <input th:value="${buy_ticket_success.play_name}"
+                type="text" name="play_name"/><br/>
+        price
+        <input th:value="${buy_ticket_success.price}"
+                type="text" name="price"/><br/>
+        image
+        <input th:value="${buy_ticket_success.image}"
+                type="text" name="image"/><br/>
+        code
+        <input th:value="${buy_ticket_success.code}"
+                type="text" name="code"/><br/>
+        cinemaHall_name
+        <input th:value="${buy_ticket_success.cinemaHall_name}"
+                type="text" name="cinemaHall_name"/><br/>
+        row
+        <input th:value="${buy_ticket_success.row}"
+                type="text" name="row"/><br/>
+        column
+        <input th:value="${buy_ticket_success.column}"
+                type="text" name="column"/><br/>
+        <input type="submit" value="退票"/><br/>
+    </form>
+</body>
+</html>

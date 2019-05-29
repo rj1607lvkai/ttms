@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <tr th:each="saleSituation:${select_result}">
+        <form>
+            play_id
+            <input th:value="${saleSituation.play_id}"
+                    type="text"/><br/>
+            play_name
+            <input th:value="${saleSituation.play_name}"
+                    type="text"/><br/>
+            type
+            <input th:value="${saleSituation.type}"
+                    type="text"/><br/>
+            saleCount
+            <input th:value="${saleSituation.saleCount}"
+                    type="text"/><br/>
+            saleVolume
+            <input th:value="${saleSituation.saleVolume}"
+                    type="text"/><br/>
+        </form>
+    </tr>
+</body>
+</html>

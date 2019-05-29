@@ -5,6 +5,13 @@
     <title>Title</title>
 </head>
 <body>
+<form action="/manager/showPerformancePlanByConditions.action" method="post">
+    play_name
+    <input type="text" name="play_name"/><br/>
+    cinemaHall_name
+    <input type="text" name="cinemaHall_name"/><br/>
+    <input type="submit" value="查看"/><br/>
+</form>
 <h1>updatePerformancePlan</h1>
 <tr th:each="performancePlan:${select_result}">
     <form action="/manager/updatePerformancePlan.action" method="post">

@@ -5,6 +5,14 @@
     <title>Title</title>
 </head>
 <body>
+<form action="/user/showPlayByConditions.action" method="post">
+    play_name
+    <input type="text" name="play_name"/><br/>
+    <input type="text" name="type"/><br/>
+    <input type="submit"  value="查看"/><br/>
+</form>
+<br/>
+<br/>
 <tr th:each="play:${select_result}">
 
     <form action="/user/showPlayDetails.action" method="post">
