@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>注册</title>
+    </head>
+    <body>
+        <form action="/user/register.action" method="post">
+            <input type="text" name="user_name" placeholder="请输入"/><br/>
+            <input type="password" name="password" value=""/><br/>
+            <input type="password" name="rePassword" value=""/><br/>
+            <input type="text" name="email" placeholder="请输入"/><br/>
+            <input type="text" name="phone" placeholder="请输入"/><br/>
+
+            <input type="submit" name="submit" value="注册"/><br/>
+            <span th:text="${register_failed_key}"></span><br/>
+        </form>
+    </body>
+</html>
+

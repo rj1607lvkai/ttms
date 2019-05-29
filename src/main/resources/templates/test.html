@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--- CSS --->
+    <link rel="stylesheet" href="style.css" type="text/css" />
+
+
+    <!--- Javascript libraries (jQuery and Selectivizr) used for the custom checkbox --->
+
+    <!--[if (gte IE 6)&(lte IE 8)]>
+    <script type="text/javascript" src="。。/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="。。/selectivizr.js"></script>
+
+    <noscript><link rel="stylesheet" href="。。/fallback.css" /></noscript>
+    <![endif]-->
+</head>
+<body>
+<div id="container">
+
+    <h1 style="color: white;"><%=request.getAttribute("login")==null?"":request.getAttribute("login") %></h1>
+    <form action="/KESHE/login" method="post" >
+
+        <div class="login">登录/<a href="register.jsp" style="color: red;" />注册</div>
+
+
+        <div class="username-text" style="color: white;">用户名:</div>
+        <div class="password-text" style="color: white;">密码:</div>
+        <div class="username-field">
+            <input type="text" name="username" placeholder="请输入" />
+        </div>
+        <div class="password-field">
+            <input type="password" name="password" value="" />
+
+        </div>
+
+        <input type="checkbox" name="autologin" value="autologin" style="color: white;" />
+        <label for="remember-me">记住密码</label>
+        <div class="forgot-usr-pwd"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="retrievePassword.jsp">忘记密码</a></p></div>
+        <input type="submit" name="submit" value="登录" onclick="denglu()"/>
+
+    </form>
+
+
+</div>
+</body>
+</html>

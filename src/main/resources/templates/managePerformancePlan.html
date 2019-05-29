@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>updatePerformancePlan</h1>
+<tr th:each="performancePlan:${select_result}">
+    <form action="/manager/updatePerformancePlan.action" method="post">
+        performancePlan_id
+        <input  th:value="${performancePlan.performancePlan_id}"
+                type="text" name="performancePlan_id" required="required"/><br/>
+
+        play_id
+        <input  th:value="${performancePlan.play_id}"
+                type="text" name="play_id" required="required"/><br/>
+
+        cinemaHall_id
+        <input  th:value="${performancePlan.cinemaHall_id}"
+                type="text" name="cinemaHall_id" required="required"/><br/>
+
+
+
+
+
+        start_year
+        <input  th:value="${performancePlan.start_year}"
+                type="text" name="start_year" required="required"/><br/>
+
+        start_month
+        <input  th:value="${performancePlan.start_month}"
+                type="text" name="start_month" required="required"/><br/>
+
+        start_day
+        <input  th:value="${performancePlan.start_day}"
+                type="text" name="start_day" required="required"/><br/>
+
+        start_hour
+        <input  th:value="${performancePlan.start_hour}"
+                type="text" name="start_hour" required="required"/><br/>
+
+        start_minute
+        <input  th:value="${performancePlan.start_minute}"
+                type="text" name="start_minute" required="required"/><br/>
+
+
+        end_year
+        <input  th:value="${performancePlan.end_year}"
+                type="text" name="end_year" required="required"/><br/>
+
+        end_month
+        <input  th:value="${performancePlan.end_month}"
+                type="text" name="end_month" required="required"/><br/>
+
+        end_day
+        <input  th:value="${performancePlan.end_day}"
+                type="text" name="end_day" required="required"/><br/>
+
+        end_hour
+        <input  th:value="${performancePlan.end_hour}"
+                type="text" name="end_hour" required="required"/><br/>
+
+        end_minute
+        <input  th:value="${performancePlan.end_minute}"
+                type="text" name="end_minute" required="required"/><br/>
+
+
+        <input type="submit" value="修改"/>
+    </form>
+</tr>
+
+<h1>deletePerformancePlan</h1>
+<tr th:each="performancePlan:${select_result}">
+    <form action="/manager/deletePerformancePlan.action" method="post">
+        performancePlan_id
+        <input  th:value="${performancePlan.performancePlan_id}"
+                type="text" name="performancePlan_id" required="required"/><br/>
+
+        play_id
+        <input  th:value="${performancePlan.play_id}"
+                type="text" name="play_id" required="required"/><br/>
+
+        cinemaHall_id
+        <input  th:value="${performancePlan.cinemaHall_id}"
+                type="text" name="cinemaHall_id" required="required"/><br/>
+
+
+
+
+
+        start_year
+        <input  th:value="${performancePlan.start_year}"
+                type="text" name="start_year" required="required"/><br/>
+
+        start_month
+        <input  th:value="${performancePlan.start_month}"
+                type="text" name="start_month" required="required"/><br/>
+
+        start_day
+        <input  th:value="${performancePlan.start_day}"
+                type="text" name="start_day" required="required"/><br/>
+
+        start_hour
+        <input  th:value="${performancePlan.start_hour}"
+                type="text" name="start_hour" required="required"/><br/>
+
+        start_minute
+        <input  th:value="${performancePlan.start_minute}"
+                type="text" name="start_minute" required="required"/><br/>
+
+
+        end_year
+        <input  th:value="${performancePlan.end_year}"
+                type="text" name="end_year" required="required"/><br/>
+
+        end_month
+        <input  th:value="${performancePlan.end_month}"
+                type="text" name="end_month" required="required"/><br/>
+
+        end_day
+        <input  th:value="${performancePlan.end_day}"
+                type="text" name="end_day" required="required"/><br/>
+
+        end_hour
+        <input  th:value="${performancePlan.end_hour}"
+                type="text" name="end_hour" required="required"/><br/>
+
+        end_minute
+        <input  th:value="${performancePlan.end_minute}"
+                type="text" name="end_minute" required="required"/><br/>
+
+
+        <input type="submit" value="删除"/>
+    </form>
+</tr>
+
+<h1>addPerformancePlanResult</h1>
+<form action="/manager/addPerformancePlan.action" method="post">
+    performancePlan_id
+    <input
+            type="text" name="performancePlan_id" required="required"/><br/>
+
+    play_id
+    <input
+            type="text" name="play_id" required="required"/><br/>
+
+    cinemaHall_id
+    <input
+            type="text" name="cinemaHall_id" required="required"/><br/>
+
+
+
+
+
+    start_year
+    <input
+            type="text" name="start_year" required="required"/><br/>
+
+    start_month
+    <input
+            type="text" name="start_month" required="required"/><br/>
+
+    start_day
+    <input
+            type="text" name="start_day" required="required"/><br/>
+
+    start_hour
+    <input
+            type="text" name="start_hour" required="required"/><br/>
+
+    start_minute
+    <input
+            type="text" name="start_minute" required="required"/><br/>
+
+
+    end_year
+    <input
+            type="text" name="end_year" required="required"/><br/>
+
+    end_month
+    <input
+            type="text" name="end_month" required="required"/><br/>
+
+    end_day
+    <input
+            type="text" name="end_day" required="required"/><br/>
+
+    end_hour
+    <input
+            type="text" name="end_hour" required="required"/><br/>
+
+    end_minute
+    <input
+            type="text" name="end_minute" required="required"/><br/>
+
+
+    <input type="submit" value="添加"/>
+</form>
+</body>
+</html>

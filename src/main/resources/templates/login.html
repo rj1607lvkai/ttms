@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>登陆</title>
+    </head>
+    <body>
+        <form action="/user/login.action" method="post">
+            <input type="text" name="user_name" placeholder="请输入"/><br/>
+            <input type="password" name="password" value=""/><br/>
+            <input type="submit" name="submit" value="登录"/><br/>
+            <span th:text="${login_failed_key}"></span>
+        </form>
+        <br/>
+        <a href="/user/register"/>注册
+    </body>
+</html>
+

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>deleteCinemaHall</h1>
+<tr th:each="cinemaHall:${select_result}">
+
+    <form action="/manager/deleteCinemaHall.action" method="post">
+
+        cinemaHall_id
+        <input th:value="${cinemaHall.cinemaHall_id}"
+               type="text" name="cinemaHall_id" required="required"/><br/>
+        cinemaHall_name
+        <input th:value="${cinemaHall.cinemaHall_name}"
+               type="text" name="cinemaHall_name" required="required"/><br/>
+
+        cinemaHall_row
+        <input th:value="${cinemaHall.cinemaHall_row}"
+               type="text" name="cinemaHall_row" required="required"/><br/>
+
+
+        cinemaHall_column
+        <input th:value="${cinemaHall.cinemaHall_column}"
+               type="text" name="cinemaHall_column" required="required"/><br/>
+
+        image
+        <input th:value="${cinemaHall.image}"
+               type="text" name="image" required="required"/><br/>
+
+
+        <input type="submit" name="submit" value="删除"/><br/>
+        <span th:text="${delete_failed_key}"></span><br/>
+    </form>
+</tr>
+
+
+
+
+<h1>updateCinemaHall</h1>
+<tr th:each="cinemaHall:${select_result}">
+
+    <form action="/manager/updateCinemaHall.action" method="post">
+
+        cinemaHall_id
+        <input th:value="${cinemaHall.cinemaHall_id}"
+               type="text" name="cinemaHall_id" required="required"/><br/>
+        cinemaHall_name
+        <input th:value="${cinemaHall.cinemaHall_name}"
+               type="text" name="cinemaHall_name" required="required"/><br/>
+
+        cinemaHall_row
+        <input th:value="${cinemaHall.cinemaHall_row}"
+               type="text" name="cinemaHall_row" required="required"/><br/>
+
+
+        cinemaHall_column
+        <input th:value="${cinemaHall.cinemaHall_column}"
+               type="text" name="cinemaHall_column" required="required"/><br/>
+
+        image
+        <input th:value="${cinemaHall.image}"
+               type="text" name="image" required="required"/><br/>
+
+
+        <input type="submit" name="submit" value="修改"/><br/>
+        <span th:text="${update_failed_key}"></span><br/>
+    </form>
+</tr>
+
+<h1>addCinemaHall</h1>
+<form action="/manager/addCinemaHall.action" method="post">
+
+    cinemaHall_name
+    <input type="text" name="cinemaHall_name" required="required"/><br/>
+
+    cinemaHall_row
+    <input type="text" name="cinemaHall_row" required="required"/><br/>
+
+    cinemaHall_column
+    <input type="text" name="cinemaHall_column" required="required"/><br/>
+
+    image
+    <input type="text" name="image" required="required"/><br/>
+
+    <input type="submit" name="submit" value="增加"/><br/>
+    <span th:text="${insert_failed_key}"></span><br/>
+</form>
+</body>
+</html>

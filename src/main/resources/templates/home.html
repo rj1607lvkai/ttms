@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://java.sun.com/JSP/Page">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+    <h1 th:text="${session.current_user.user_name}"/>
+    <form action="/user/update.action" method="post">
+
+        <input type="text" name="user_name" placeholder="请输入"
+               th:value="${session.current_user.user_name}"/><br/>
+
+        <input type="text" name="email" placeholder="请输入"
+               th:value="${session.current_user.email}"/><br/>
+        <input type="text" name="phone" placeholder="请输入"
+               th:value="${session.current_user.phone}"/><br/>
+
+        <input type="submit" name="submit" value="修改"/><br/>
+        <span th:text="${update_failed_key}"></span><br/>
+    </form>
+
+
+
+    <h1>showAllPlay</h1>
+    <form action="/user/showAllPlay.action" method="post">
+        <input type="submit" value="查询"/>
+    </form>
+
+
+    <!--<h1>selectAllCinemaHall</h1>
+    <form action="/user/selectAllCinemaHall.action" method="post">
+        <input type="submit" value="查询"/>
+    </form>-->
+
+
+    <h1>
+        <a href="/manager/managePlay.action">
+            managePlay
+        </a><br/>
+        <a href="/manager/manageCinemaHall.action">
+            manageCinemaHall
+        </a><br/>
+        <a href="/manager/managePerformancePlan.action">
+            managePerformancePlan
+        </a><br/>
+        <a href="/manager/manageUser.action">
+            manageUser
+        </a><br/>
+
+    </h1>
+</body>
+</html>

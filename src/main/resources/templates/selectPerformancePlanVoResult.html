@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <tr th:each="performancePlanVo:${select_result}">
+        <form action="/manager/updatePerformancePlan.action" method="post">
+            performancePlan_id
+            <input  th:value="${performancePlanVo.performancePlan_id}"
+                    type="text"  required="required"/><br/>
+
+            play_name
+            <input  th:value="${performancePlanVo.play_name}"
+                    type="text" required="required"/><br/>
+
+            image
+            <input  th:value="${performancePlanVo.image}"
+                    type="text" required="required"/><br/>
+
+            code
+            <input  th:value="${performancePlanVo.code}"
+                    type="text" required="required"/><br/>
+
+        </form>
+    </tr>
+</body>
+</html>
