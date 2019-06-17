@@ -7,19 +7,22 @@ import com.example.demo2.pojo.User;
 import com.example.demo2.service.ManagerService;
 import com.example.demo2.service.UserService;
 import com.example.demo2.utils.ConstantValue;
+import com.example.demo2.utils.FileUtil;
 import com.example.demo2.utils.PhoneUtil;
-import com.example.demo2.vo.PerformancePlanVo;
 import com.example.demo2.vo.SaleSituation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,80 +47,131 @@ public class ManagerController {
     }
 
     @RequestMapping(value = "addUser.action")
-    public String addUser(String user_name, String password, String rePassword,
-                          String email, String phone, Model model) {
+    public String addUser(String user_name, String password,
+                          String rePassword,
+                          String sex,int position,
+                          String email, String phone,
+                          MultipartFile file,
+                          Model model) {
 
+        model.addAttribute("user_name",user_name);
+        model.addAttribute("password",password);
+        model.addAttribute("rePassword",rePassword);
+        model.addAttribute("sex",sex);
+        model.addAttribute("position",position);
+        model.addAttribute("email",email);
+        model.addAttribute("phone",phone);
+        if (user_name == null || Objects.equals(user_name,"")){
+            model.addAttribute(ConstantValue.REGISTER_FAILED_KEY,"用户名不能为空");
+            return "addUser";
+        }
+        if (password == null || Objects.equals(password,"")){
+            model.addAttribute(ConstantValue.REGISTER_FAILED_KEY,"密码不能为空");
+            return "addUser";
+        }
+        if (rePassword == null || Objects.equals(rePassword,"")){
+            model.addAttribute(ConstantValue.REGISTER_FAILED_KEY,"确认密码不能为空");
+            return "addUser";
+        }
+        if (email == null || Objects.equals(email,"")){
+            model.addAttribute(ConstantValue.REGISTER_FAILED_KEY,"邮箱不能为空");
+            return "addUser";
+        }
+        if (phone == null || Objects.equals(phone,"")){
+            model.addAttribute(ConstantValue.REGISTER_FAILED_KEY,"电话号码不能为空");
+            return "addUser";
+        }
+        if (sex == null || Objects.equals(sex,"")){
+            model.addAttribute(ConstantValue.REGISTER_FAILED_KEY,"性别不能为空");
+            return "addUser";
+        }
+        if (userService.existUser(user_name)) {
+            model.addAttribute(ConstantValue.REGISTER_FAILED_KEY, "用户名已存在");
+            return "addUser";
+        }
         if (!Objects.equals(password, rePassword)) {
             model.addAttribute(ConstantValue.REGISTER_FAILED_KEY, "密码不一致");
-            return "failed";
+            return "addUser";
         }
         if (!PhoneUtil.isMobileNumber(phone)) {
             model.addAttribute(ConstantValue.REGISTER_FAILED_KEY, "电话号码不正确");
-            return "failed";
+            return "addUser";
         }
+        if (position == 0){
+            model.addAttribute(ConstantValue.REGISTER_FAILED_KEY, "用户身份不能为空");
+            return "addUser";
+        }
+
+        String fileName = FileUtil.upLoadFile(file);
         User user = new User();
         user.setUser_name(user_name);
         user.setPassword(password);
         user.setEmail(email);
         user.setPhone(phone);
         user.setStatus(ConstantValue.STATUS_INCUMBENCY);
-        user.setPosition(ConstantValue.POSITION_EMPLOYEE);
+        user.setPosition(position);
+        user.setSex(sex);
+        user.setImage(ConstantValue.IMAGE_PREFIX+fileName);
+        System.out.println(user);
         int insert = userService.register(user);
         if (insert >= ConstantValue.INSERT_SUCCESS) {
-            return "success";
+            return "redirect:manageUser.action";
         }
-        return "error";
+        return "managerHome";
     }
 
     @RequestMapping(value = "deleteUser.action")
-    public String deleteUser(String user_id,
+    public String deleteUser(int user_id,
                              HttpServletRequest request, HttpServletResponse response,
                              Model model) {
+        if (user_id == 0){
+            return "redirect:manageUser.action";
+        }
         int delete = managerService.deleteUserById(user_id);
-        if (delete == ConstantValue.DELETE_SUCCESS) {
-            return "success";
+        if (delete >= ConstantValue.DELETE_SUCCESS) {
+            return "redirect:manageUser.action";
         }
-        model.addAttribute(ConstantValue.DELETE_FAILED_KEY, "删除失败,用户不存在");
-        try {
-            request.getRequestDispatcher("/manager/selectAllUser.action").forward(request, response);
-        } catch (ServletException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "error";
+        return "managerHome";
     }
 
     @RequestMapping(value = "updateUser.action")
     public String updateUser(User user, Model model,
-                             HttpServletRequest request, HttpServletResponse response) {
+                             MultipartFile file,
+                             HttpSession session) {
+        model.addAttribute("select_result",user);
+        User selectUser = managerService.selectUserById(user.getUser_id());
         if (!PhoneUtil.isMobileNumber(user.getPhone())) {
             model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "电话号码不正确");
-            try {
-                request.getRequestDispatcher("/manager/selectAllUser.action").forward(request, response);
-            } catch (ServletException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return "error";
-        } else {
-            int update = managerService.updateUserById(user);
-            if (update >= ConstantValue.UPDATE_SUCCESS) {
-                return "success";
-            }
-            model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "用户不存在");
-            try {
-                request.getRequestDispatcher("/manager/selectAllUser.action").forward(request, response);
-            } catch (ServletException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return "error";
+            return "updateUser";
         }
+        String fileName = FileUtil.upLoadFile(file);
+        if (Objects.equals(fileName, ConstantValue.DEFAULT_IMAGE)) {
+            user.setImage(selectUser.getImage());
+        }else {
+            user.setImage(ConstantValue.IMAGE_PREFIX+fileName);
+        }
+        if (!Objects.equals(selectUser.getUser_name(), user.getUser_name())) {
+            if (userService.existUser(user.getUser_name())) {
+                model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "用户名已存在");
+                return "updateUser";
+            }
+        }
+        int update = managerService.updateUserById(user);
+        if (update >= ConstantValue.UPDATE_SUCCESS) {
+            return "redirect:manageUser.action";
+        }
+        return "managerHome";
     }
 
+    @RequestMapping(value = "selectUserById.action")
+    public String selectUserById(int user_id,Model model){
+        if (user_id == 0){
+            return "managerHome";
+        }
+        User user = managerService.selectUserById(user_id);
+        model.addAttribute(ConstantValue.SELECT_RESULT,user);
+        return "updateUser";
+    }
     @RequestMapping(value = "showAllUser.action")
     public String showAllUser(Model model){
         List<User> userList = managerService.selectAllUser();
@@ -127,16 +181,15 @@ public class ManagerController {
 
     @RequestMapping(value = "showUserByConditions.action")
     public String showUserByConditions(String user_name,
-                                       String position,
+                                       @RequestParam(defaultValue = "0") int position,
                                        String phone,
                                        Model model){
-        int pos=0;
-        if (position == null || position == ""){
 
-        }else {
-            pos=Integer.parseInt(position);
-        }
-        List<User> userList = managerService.showUserByConditions(user_name,pos,phone);
+
+        model.addAttribute("user_name",user_name);
+        model.addAttribute("phone",phone);
+
+        List<User> userList = managerService.showUserByConditions(user_name,position,phone);
         model.addAttribute(ConstantValue.SELECT_RESULT,userList);
         return "manageUser";
     }
@@ -151,101 +204,154 @@ public class ManagerController {
 
 
     @RequestMapping(value = "addPlay.action")
-    public String addPlay(Play play, Model model) {
-        int add = managerService.addPlay(play);
-        if (add == ConstantValue.INSERT_SUCCESS) {
-            return "success";
+    public String addPlay(Play play, MultipartFile file,
+                          Model model) {
+        if (play == null){
+            model.addAttribute(ConstantValue.INSERT_FAILED_KEY,"请完善影片信息");
+            return "addPlay";
         }
-        model.addAttribute(ConstantValue.INSERT_FAILED_KEY, "添加失败");
-        return "home";
+        model.addAttribute("play_name",play.getPlay_name());
+        model.addAttribute("duration",play.getDuration());
+        model.addAttribute("type",play.getType());
+        model.addAttribute("price",play.getPrice());
+        model.addAttribute("code",play.getCode());
+        model.addAttribute("description",play.getDescription());
+        if (play.getPlay_name() == null || Objects.equals(play.getPlay_name().trim(),"")) {
+            model.addAttribute(ConstantValue.INSERT_FAILED_KEY,"影片名称不能为空");
+            return "addPlay";
+        }
+        if (play.getDuration() <= 0){
+            model.addAttribute(ConstantValue.INSERT_FAILED_KEY,"影片时长不正确");
+            return "addPlay";
+        }
+        if (play.getType() == null || Objects.equals(play.getType().trim(),"")){
+            model.addAttribute(ConstantValue.INSERT_FAILED_KEY,"影片类型不能为空");
+            return "addPlay";
+        }
+        if (play.getPrice() <=0){
+            model.addAttribute(ConstantValue.INSERT_FAILED_KEY,"影片价格不正确");
+            return "addPlay";
+        }
+        if (play.getCode() == null || Objects.equals(play.getCode().trim(),"")){
+            model.addAttribute(ConstantValue.INSERT_FAILED_KEY,"影片评分不能为空");
+            return "addPlay";
+        }
+        if (play.getDescription() == null || Objects.equals(play.getDescription().trim(),"")){
+            model.addAttribute(ConstantValue.INSERT_FAILED_KEY,"影片简介不能为空");
+            return "addPlay";
+        }
+        play.setStatus(1);
+        String fileName = FileUtil.upLoadFile(file);
+        play.setImage(ConstantValue.IMAGE_PREFIX+fileName);
+
+
+        int insert = managerService.addPlay(play);
+        if (insert >= ConstantValue.INSERT_SUCCESS) {
+            return "redirect:managePlay.action";
+        }
+
+        return "managerHome";
 
     }
 
+    @RequestMapping(value = "selectPlayById.action")
+    public String selectPlayById(int play_id,Model model){
+        if (play_id == 0){
+            return "redirect:managePlay.action";
+        }
+        Play play=managerService.selectPlayById(play_id);
+        model.addAttribute(ConstantValue.SELECT_RESULT,play);
+        return "updatePlay";
+    }
+
+
     @RequestMapping(value = "deletePlay.action")
-    public String addPlay(String play_name, HttpSession session,
+    public String deletePlay(int play_id,
                           Model model) {
-        if (play_name == null || play_name == "") {
-            model.addAttribute(ConstantValue.DELETE_FAILED_KEY, "影片名不能为空");
-            return "home";
+        if (play_id == 0){
+            return "redirect:managePlay.action";
         }
-        int delete = managerService.deletePlayByName(play_name);
+        int delete = managerService.deletePlayById(play_id);
         if (delete >= ConstantValue.DELETE_SUCCESS) {
-            return "success";
+            return "redirect:managePlay.action";
         }
-        model.addAttribute(ConstantValue.DELETE_FAILED_KEY, "影片不存在");
-        return "home";
+        return "managerHome";
 
     }
 
     @RequestMapping(value = "updatePlay.action")
-    public String addPlay(Play play, HttpSession session,
+    public String updatePlay(Play play, MultipartFile file,
                           Model model) {
         int play_id = play.getPlay_id();
         if (play_id == 0) {
             model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "影片不能为空");
-            return "home";
+            return "updatePlay";
         }
+        Play selectPlay = managerService.selectPlayById(play_id);
+        String fileName = FileUtil.upLoadFile(file);
+        if (Objects.equals(fileName,ConstantValue.DEFAULT_IMAGE)){
+            play.setImage(selectPlay.getImage());
+        }else {
+            play.setImage(ConstantValue.IMAGE_PREFIX+fileName);
+        }
+
+
         int update = managerService.updatePlayById(play);
         if (update >= ConstantValue.DELETE_SUCCESS) {
-            return "success";
+            return "redirect:managePlay.action";
         }
-        model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "更新失败,影片不存在");
-        return "home";
+        return "managerHome";
 
     }
 
 
     @RequestMapping(value = "addCinemaHall.action")
-    public String addCinemaHall(CinemaHall cinemaHall, Model model) {
+    public String addCinemaHall(CinemaHall cinemaHall,
+                                MultipartFile file,
+                                Model model) {
 
+        String fileName = FileUtil.upLoadFile(file);
+        cinemaHall.setImage(ConstantValue.IMAGE_PREFIX+fileName);
         int insert = managerService.addCinemaHall(cinemaHall);
         if (insert >= ConstantValue.INSERT_SUCCESS) {
-            return "success";
+            return "redirect:manageCinemaHall.action";
         }
-        model.addAttribute(ConstantValue.INSERT_FAILED_KEY, "影厅添加失败");
-        return "home";
+        return "managerHome";
 
     }
 
     @RequestMapping(value = "deleteCinemaHall.action")
     public String deleteCinemaHall(int cinemaHall_id,
-                                   HttpServletRequest request, HttpServletResponse response,
                                    Model model) {
 
+        if (cinemaHall_id == 0){
+            return "managerHome";
+        }
         int delete = managerService.deleteCinemaHall(cinemaHall_id);
         if (delete >= ConstantValue.DELETE_SUCCESS) {
-            return "success";
+            return "redirect:manageCinemaHall.action";
         }
-        model.addAttribute(ConstantValue.DELETE_FAILED_KEY, "影厅不存在");
-        try {
-            request.getRequestDispatcher("/user/selectAllCinemaHall.action").forward(request, response);
-        } catch (ServletException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "error";
+        return "managerHome";
 
     }
 
     @RequestMapping(value = "updateCinemaHall.action")
     public String updateCinemaHall(CinemaHall cinemaHall,
-                                   HttpServletRequest request, HttpServletResponse response,
+                                   MultipartFile file,
                                    Model model) {
 
+        CinemaHall selectCinemaHall1 = managerService.selectCinemaHallById(cinemaHall.getCinemaHall_id());
+        String fileName = FileUtil.upLoadFile(file);
+        if (Objects.equals(fileName,ConstantValue.DEFAULT_IMAGE)){
+            cinemaHall.setImage(selectCinemaHall1.getImage());
+        }else {
+            cinemaHall.setImage(ConstantValue.IMAGE_PREFIX+fileName);
+        }
         int update = managerService.updateCinemaHall(cinemaHall);
         if (update >= ConstantValue.UPDATE_SUCCESS) {
-            return "success";
+            return "redirect:manageCinemaHall.action";
         }
-        model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "影厅不存在");
-        try {
-            request.getRequestDispatcher("/user/selectAllCinemaHall.action").forward(request, response);
-        } catch (ServletException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "error";
+        return "managerHome";
 
     }
 
@@ -254,39 +360,49 @@ public class ManagerController {
     public String addPerformancePlan(PerformancePlan performancePlan, Model model) {
         int insert = managerService.insertPerformancePlan(performancePlan);
         if (insert >= ConstantValue.INSERT_SUCCESS) {
-            return "success";
+            return "redirect:managePerformancePlan.action";
         }
-        model.addAttribute(ConstantValue.INSERT_FAILED_KEY, "添加演出计划失败");
-        return "failed";
+        return "managerHome";
     }
 
     @RequestMapping(value = "updatePerformancePlan.action")
     public String updatePerformancePlan(PerformancePlan performancePlan, Model model) {
         int update = managerService.updatePerformancePlanById(performancePlan);
         if (update >= ConstantValue.UPDATE_SUCCESS) {
-            return "success";
+            return "redirect:managePerformancePlan.action";
         }
-        model.addAttribute(ConstantValue.UPDATE_FAILED_KEY, "修改演出计划失败");
-        return "failed";
+        return "managerHome";
     }
 
     @RequestMapping(value = "deletePerformancePlan.action")
-    public String deletePerformancePlan(PerformancePlan performancePlan, Model model) {
-        int delete = managerService.deletePerformancePlanById(performancePlan);
-        if (delete >= ConstantValue.DELETE_SUCCESS) {
-            return "success";
+    public String deletePerformancePlan(int performancePlan_id, Model model) {
+        if (performancePlan_id == 0){
+            return "managerHome";
         }
-        model.addAttribute(ConstantValue.DELETE_FAILED_KEY, "删除演出计划失败");
-        return "failed";
+        int delete = managerService.deletePerformancePlanById(performancePlan_id);
+        if (delete >= ConstantValue.DELETE_SUCCESS) {
+            return "redirect:managePerformancePlan.action";
+        }
+        return "managerHome";
     }
 
 
     @RequestMapping(value = "showPlayByConditions.action")
     public String showPlayByConditions(String play_name,
                                        String type, Model model) {
+
+        model.addAttribute("play_name",play_name);
+        model.addAttribute("type",type);
         List<Play> playList = userService.selectPlayByConditions(play_name, type);
         model.addAttribute(ConstantValue.SELECT_RESULT, playList);
         return "managePlay";
+    }
+    @RequestMapping(value = "showPlayItemByConditions.action")
+    public String showPlayItemByConditions(String play_name,
+                                       String type, Model model) {
+        List<Play> playList = userService.selectPlayByConditions(play_name, type);
+        model.addAttribute(ConstantValue.SELECT_RESULT, playList);
+        return "playItem";
     }
 
     @RequestMapping(value = "managePlay.action")
@@ -296,12 +412,33 @@ public class ManagerController {
         return "managePlay";
     }
 
-
     @RequestMapping(value = "showCinemaHallByConditions.action")
     public String showCinemaHallByConditions(String cinemaHall_name, Model model) {
+        model.addAttribute("cinemaHall_name",cinemaHall_name);
         List<CinemaHall> cinemaHallList = userService.selectCinemaHallByConditions(cinemaHall_name);
         model.addAttribute(ConstantValue.SELECT_RESULT, cinemaHallList);
         return "manageCinemaHall";
+
+    }
+    @RequestMapping(value = "showCinemaHallItemByConditions.action")
+    public String showCinemaHallItemByConditions(String cinemaHall_name, Model model) {
+        List<CinemaHall> cinemaHallList = userService.selectCinemaHallByConditions(cinemaHall_name);
+        model.addAttribute(ConstantValue.SELECT_RESULT, cinemaHallList);
+        return "cinemaHallItem";
+
+    }
+    @RequestMapping(value = "selectCinemaHallById.action")
+    public String selectCinemaHallById(int cinemaHall_id, Model model) {
+        CinemaHall cinemaHall=managerService.selectCinemaHallById(cinemaHall_id);
+        model.addAttribute(ConstantValue.SELECT_RESULT, cinemaHall);
+        return "updateCinemaHall";
+
+    }
+    @RequestMapping(value = "selectPerformancePlanById.action")
+    public String selectPerformancePlanById(int performancePlan_id, Model model) {
+        PerformancePlan performancePlan=managerService.selectPerformancePlanById(performancePlan_id);
+        model.addAttribute(ConstantValue.SELECT_RESULT, performancePlan);
+        return "updatePerformancePlan";
 
     }
 
@@ -313,10 +450,14 @@ public class ManagerController {
     }
 
 
+
+
     @RequestMapping(value = "showPerformancePlanByConditions.action")
     public String showPerformancePlanByConditions(String cinemaHall_name,
                                                   String play_name,
                                                   Model model) {
+        model.addAttribute("cinemaHall_name",cinemaHall_name);
+        model.addAttribute("play_name",play_name);
         List<PerformancePlan> performancePlanList = managerService.showPerformancePlanByConditions(play_name, cinemaHall_name);
         model.addAttribute(ConstantValue.SELECT_RESULT, performancePlanList);
         return "managePerformancePlan";
@@ -335,6 +476,58 @@ public class ManagerController {
         model.addAttribute(ConstantValue.SELECT_RESULT, saleSituationList);
         return "saleSituation";
     }
+    @RequestMapping(value = "showSaleSituationByConditions.action")
+    public String showSaleSituationByConditions(String play_name,
+                                                String type,
+                                                Model model) {
+        model.addAttribute("play_name",play_name);
+        model.addAttribute("type",type);
+
+        List<SaleSituation> saleSituationList=managerService.showSaleSituation();
+        List<SaleSituation> resultList=new ArrayList<>();
+        if (play_name == null){
+            if (type == null){
+                model.addAttribute(ConstantValue.SELECT_RESULT, saleSituationList);
+                return "saleSituation";
+            }
+            for (SaleSituation saleSituation:saleSituationList){
+                if (saleSituation.getType().contains(type)){
+                    resultList.add(saleSituation);
+                }
+            }
+            model.addAttribute(ConstantValue.SELECT_RESULT, resultList);
+            return "saleSituation";
+        }
+        if (type == null){
+            for (SaleSituation saleSituation:saleSituationList){
+                if (saleSituation.getPlay_name().contains(play_name)){
+                    resultList.add(saleSituation);
+                }
+            }
+            model.addAttribute(ConstantValue.SELECT_RESULT, resultList);
+            return "saleSituation";
+        }
+        for (SaleSituation saleSituation:saleSituationList){
+            if (saleSituation.getPlay_name().contains(play_name) && saleSituation.getType().contains(type)){
+                resultList.add(saleSituation);
+            }
+        }
+        model.addAttribute(ConstantValue.SELECT_RESULT, resultList);
+        return "saleSituation";
+    }
+
+    @RequestMapping(value = "showAllPlayItem.action")
+    public String showAllPlayItem(Model model) {
+        List<Play> playList=managerService.selectAllPlay();
+        model.addAttribute(ConstantValue.SELECT_RESULT, playList);
+        return "playItem";
+    }
+    @RequestMapping(value = "showAllCinemaHallItem.action")
+    public String showAllCinemaHallItem(Model model) {
+        List<CinemaHall> cinemaHallList=managerService.selectAllCinemaHall();
+        model.addAttribute(ConstantValue.SELECT_RESULT, cinemaHallList);
+        return "cinemaHallItem";
+    }
 
 
 
@@ -344,7 +537,26 @@ public class ManagerController {
 
 
 
-
+    @RequestMapping(value="home")
+    public String homePage(){
+        return "managerHome";
+    }
+    @RequestMapping(value="addCinemaHall")
+    public String addCinemaHallPage(){
+        return "addCinemaHall";
+    }
+    @RequestMapping(value="addUser")
+    public String addUserPage(){
+        return "addUser";
+    }
+    @RequestMapping(value="addPlay")
+    public String addPlayPage(){
+        return "addPlay";
+    }
+    @RequestMapping(value="addPerformancePlan")
+    public String addPerformancePlanPage(){
+        return "addPerformancePlan";
+    }
 
 
 }
